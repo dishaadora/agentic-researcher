@@ -1,0 +1,13 @@
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+data/runtime/
+
+# Local-only files
+.claude/
+AGENTS.md
+problem-statement.txt

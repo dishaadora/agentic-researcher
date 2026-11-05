@@ -1,0 +1,443 @@
+{
+  "name": "Shopify",
+  "website": "https://www.shopify.com",
+  "category": "Commerce",
+  "oauthSupport": "yes",
+  "summary": "Your distribution choice decides the work, and you can't change it later. Custom distribution needs no review but is limited to one store or Plus organization, while public distribution needs App Store review, and customer data needs extra approval.",
+  "biggestRisk": "Picking a distribution method is irreversible, so a pilot on custom distribution won't convert into a public app.",
+  "paths": [
+    {
+      "id": "custom",
+      "name": "Custom distribution, one merchant",
+      "whenToUse": "You're connecting one store, or stores in a single Plus organization.",
+      "gates": [],
+      "gatesKnown": true,
+      "handsOnHours": {
+        "min": 1,
+        "max": 3
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "none",
+        "note": "No approval step on this path.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Confirm one merchant is enough",
+          "owner": "agent",
+          "detail": "Check your plans against the limits of custom distribution, because this choice can't be changed afterward.",
+          "minutes": {
+            "min": 5,
+            "max": 15
+          },
+          "confirm": "You've confirmed you won't need other merchants on this app.",
+          "handoffReason": null,
+          "claimIds": [
+            "sh-permanent",
+            "sh-custom"
+          ]
+        },
+        {
+          "title": "Create the app",
+          "owner": "you",
+          "detail": "Create an app in your Shopify developer account and select custom distribution. Add the Composio redirect URI to its configuration.",
+          "minutes": {
+            "min": 20,
+            "max": 45
+          },
+          "confirm": "The app shows a client ID and secret.",
+          "handoffReason": "This requires your Shopify account.",
+          "claimIds": [
+            "sh-signup"
+          ]
+        },
+        {
+          "title": "Install on the store",
+          "owner": "you",
+          "detail": "Generate the install link and approve it on the merchant's store.",
+          "minutes": {
+            "min": 10,
+            "max": 20
+          },
+          "confirm": "The agent can read data from that store.",
+          "handoffReason": "A store owner has to approve the install.",
+          "claimIds": []
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "You want to charge through Shopify's billing",
+          "cause": "Custom apps can't charge merchants through Shopify's app billing system.",
+          "action": "Bill the merchant directly, or use public distribution from the start.",
+          "claimIds": [
+            "sh-billing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "public",
+      "name": "Public distribution, App Store",
+      "whenToUse": "Many merchants will install your app.",
+      "gates": [
+        "provider_review",
+        "fee"
+      ],
+      "gatesKnown": true,
+      "handsOnHours": {
+        "min": 16,
+        "max": 60
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "unknown",
+        "note": "The Shopify pages we read don't state a review time. Repeatedly failing to fix issues can also trigger a cooldown that blocks resubmission.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Decide your customer data level",
+          "owner": "agent",
+          "detail": "List the fields your agent reads. Names, addresses, phones and emails put you at Level 2, which adds more requirements.",
+          "minutes": {
+            "min": 20,
+            "max": 45
+          },
+          "confirm": "You know your level and can justify each field.",
+          "handoffReason": null,
+          "claimIds": [
+            "sh-levels"
+          ]
+        },
+        {
+          "title": "Request protected data access first",
+          "owner": "you",
+          "detail": "Request access or opt out in the Partner Dashboard before you submit, because you can't apply while the app is under review.",
+          "minutes": {
+            "min": 20,
+            "max": 40
+          },
+          "confirm": "The dashboard shows the request is complete.",
+          "handoffReason": "This requires your Partner Dashboard account.",
+          "claimIds": [
+            "sh-pcd-timing"
+          ]
+        },
+        {
+          "title": "Meet the submission requirements",
+          "owner": "you",
+          "detail": "Subscribe to compliance webhooks, add a 1200 by 1200 icon, an emergency contact and a listing, then run the automated checks. The agent can draft the listing and test the webhooks.",
+          "minutes": {
+            "min": 480,
+            "max": 2400
+          },
+          "confirm": "All automated checks pass on the review page.",
+          "handoffReason": "This requires your account and a real running app.",
+          "claimIds": [
+            "sh-webhooks",
+            "sh-checks"
+          ]
+        },
+        {
+          "title": "Submit and respond to review",
+          "owner": "provider",
+          "detail": "Add noreply@shopify.com to your allowed senders, and respond to review emails promptly.",
+          "minutes": null,
+          "confirm": "Your app is approved.",
+          "handoffReason": "Shopify's review team tests the app.",
+          "claimIds": [
+            "sh-email"
+          ]
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "Your submissions are paused",
+          "cause": "Repeatedly failing to fix issues or not responding to reviewers can trigger a cooldown.",
+          "action": "Resubmit on the date shown in the status banner, with all issues fixed.",
+          "claimIds": [
+            "sh-cooldown"
+          ]
+        }
+      ]
+    }
+  ],
+  "nuances": [
+    {
+      "title": "Testing is free of data review",
+      "detail": "Apps installed only on development stores don't need a protected customer data review, so you can build on those before you apply.",
+      "claimIds": [
+        "sh-dev-stores"
+      ]
+    },
+    {
+      "title": "Data minimums are enforced",
+      "detail": "Shopify approves access based on need, so an agent asking for everything \"just in case\" is at risk.",
+      "claimIds": [
+        "sh-minimum"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "sh-custom",
+      "text": "Custom distribution covers one store, stores in one Plus organization or development stores, and needs no approval.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/distribution",
+          "title": "Select a distribution method",
+          "quote": "on multiple stores that belong to the same Plus organization"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-permanent",
+      "text": "You can't change the distribution method after you select it.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/distribution",
+          "title": "Select a distribution method",
+          "quote": "You can't change the distribution method after you select it."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-billing",
+      "text": "Custom apps can't charge merchants through Shopify's billing system.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/distribution",
+          "title": "Select a distribution method",
+          "quote": "Can't charge merchants through Shopify's app billing system"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-levels",
+      "text": "Level 2 covers customer data including name, address, phone or email fields.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/protected-customer-data",
+          "title": "Protected customer data",
+          "quote": "Customer data including name, address, phone, or email fields"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-pcd-timing",
+      "text": "You can't apply for protected customer data while an app is under review.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+          "title": "Submit your app for review",
+          "quote": "isn't possible while the app is under review"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-webhooks",
+      "text": "Apps distributed through the App Store must subscribe to compliance webhooks.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+          "title": "Submit your app for review",
+          "quote": "must subscribe to compliance webhooks"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-checks",
+      "text": "You complete automated checks and prepare your app before submitting it for review.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+          "title": "Submit your app for review",
+          "quote": "After you complete the automated checks"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-email",
+      "text": "Shopify advises adding its address to your allowed senders to receive review emails.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+          "title": "Submit your app for review",
+          "quote": "to your allowed senders list"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-cooldown",
+      "text": "Repeatedly failing to address issues can put you in a temporary cooldown, during which you can't submit.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+          "title": "Submit your app for review",
+          "quote": "might be placed in a temporary cooldown period"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-dev-stores",
+      "text": "Apps installed only on development stores don't need a protected customer data review.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/protected-customer-data",
+          "title": "Protected customer data",
+          "quote": "You don't need to submit a request for review for apps that are installed only on development stores."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-minimum",
+      "text": "Shopify approves protected data access if it's the minimum required.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/protected-customer-data",
+          "title": "Protected customer data",
+          "quote": "the requested data is the minimum amount required by your app"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-signup",
+      "text": "The partner signup page redirects to Shopify's sign-in, so creating an app needs an account.",
+      "label": "tested",
+      "sources": [],
+      "probeRefs": [
+        "p1"
+      ],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-time",
+      "text": "Shopify's review duration wasn't stated on the pages we read.",
+      "label": "unknown",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-fee",
+      "text": "Public distribution requires registering for the Shopify App Store, which has a one-time fee.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://shopify.dev/docs/apps/launch/distribution",
+          "title": "Select a distribution method",
+          "quote": "Public distribution also requires registering for the Shopify App Store"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sh-fee-amount",
+      "text": "The amount of the one-time registration fee wasn't on the pages we read.",
+      "label": "unknown",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    }
+  ],
+  "unknowns": [
+    "App Store review duration.",
+    "The amount of the App Store registration fee.",
+    "Whether Shopify has specific rules for AI agents acting on merchant data."
+  ],
+  "slug": "shopify",
+  "generatedAt": "2026-11-04T18:12:58.796Z",
+  "origin": "reviewed_seed",
+  "model": null,
+  "probes": [
+    {
+      "id": "p1",
+      "url": "https://partners.shopify.com/signup",
+      "status": 302,
+      "observation": "Redirects to a sign-in page (accounts.shopify.com/oauth/authorize), so this page needs an account.",
+      "checkedAt": "2026-11-04T18:13:22.401Z"
+    }
+  ]
+}

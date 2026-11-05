@@ -1,0 +1,392 @@
+{
+  "name": "Spotify",
+  "website": "https://www.spotify.com",
+  "category": "Media",
+  "oauthSupport": "yes",
+  "summary": "You can register an app quickly, but without extended quota only 5 allowlisted users can use it. Extended quota is limited to established organizations with at least 250k monthly active users, so most new products can't launch publicly.",
+  "biggestRisk": "Two non-technical limits could stop you: the 250k user threshold, and a policy against ingesting Spotify Content into AI models.",
+  "paths": [
+    {
+      "id": "development",
+      "name": "Development mode, up to 5 users",
+      "whenToUse": "A personal tool, prototype or demo for people you can list by name.",
+      "gates": [
+        "paid_account"
+      ],
+      "gatesKnown": true,
+      "handsOnHours": {
+        "min": 0.25,
+        "max": 0.75
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "none",
+        "note": "No approval step on this path.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Register the app",
+          "owner": "you",
+          "detail": "In the Developer Dashboard, create an app and add the redirect URI from your Composio auth config. The app owner needs Spotify Premium.",
+          "minutes": {
+            "min": 5,
+            "max": 15
+          },
+          "confirm": "The app page shows a client ID.",
+          "handoffReason": "This requires your Spotify account and accepting the developer terms.",
+          "claimIds": [
+            "sp-premium"
+          ]
+        },
+        {
+          "title": "Allowlist your users",
+          "owner": "you",
+          "detail": "Add each person to the app's allowlist before they connect.",
+          "minutes": {
+            "min": 2,
+            "max": 10
+          },
+          "confirm": "That user can connect and make an API call.",
+          "handoffReason": "This needs each user's account details.",
+          "claimIds": [
+            "sp-5users"
+          ]
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "A user gets a 403 error",
+          "cause": "Requests from users who aren't allowlisted receive a 403.",
+          "action": "Add them to the allowlist. If you've hit 5 users, you've reached the limit of this path.",
+          "claimIds": [
+            "sp-403"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extended",
+      "name": "Extended quota, public launch",
+      "whenToUse": "An established company with a launched service and at least 250k monthly active users.",
+      "gates": [
+        "usage_threshold",
+        "business_verification",
+        "partner_agreement",
+        "provider_review"
+      ],
+      "gatesKnown": true,
+      "handsOnHours": {
+        "min": 4,
+        "max": 12
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": 42,
+        "basis": "provider_stated",
+        "note": "Spotify says the review can take up to six weeks. That's after your partner application is approved, and we found no timing for that application.",
+        "claimId": "sp-weeks"
+      },
+      "steps": [
+        {
+          "title": "Check your eligibility first",
+          "owner": "agent",
+          "detail": "Compare your company against each criterion: registered business, launched service, 250k monthly active users, key markets and commercial viability. If you miss one, stop here.",
+          "minutes": {
+            "min": 10,
+            "max": 20
+          },
+          "confirm": "You meet every criterion and have the numbers to show it.",
+          "handoffReason": null,
+          "claimIds": [
+            "sp-org",
+            "sp-mau"
+          ]
+        },
+        {
+          "title": "Check that your agent's use is allowed",
+          "owner": "agent",
+          "detail": "Compare your agent's behavior against Spotify's Developer Policy, especially the rules on AI and machine learning.",
+          "minutes": {
+            "min": 15,
+            "max": 30
+          },
+          "confirm": "You can explain how the agent complies with each relevant rule.",
+          "handoffReason": null,
+          "claimIds": [
+            "sp-ai"
+          ]
+        },
+        {
+          "title": "Apply as a partner",
+          "owner": "you",
+          "detail": "Submit the partner application from a company email address.",
+          "minutes": {
+            "min": 30,
+            "max": 90
+          },
+          "confirm": "You receive an approval.",
+          "handoffReason": "This is a business application made by your company.",
+          "claimIds": [
+            "sp-partner"
+          ]
+        },
+        {
+          "title": "Request the quota extension",
+          "owner": "you",
+          "detail": "In the Developer Dashboard, open Quota extension Request and complete the questionnaire.",
+          "minutes": {
+            "min": 30,
+            "max": 60
+          },
+          "confirm": "The dashboard shows your request as submitted.",
+          "handoffReason": "This requires your dashboard account.",
+          "claimIds": [
+            "sp-partner"
+          ]
+        },
+        {
+          "title": "Wait for review",
+          "owner": "provider",
+          "detail": "Spotify tests the app against its Developer Policy and replies by email.",
+          "minutes": null,
+          "confirm": "Spotify confirms by email and your app can serve users who aren't allowlisted.",
+          "handoffReason": "Spotify reviews the app.",
+          "claimIds": [
+            "sp-weeks"
+          ]
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "You don't have 250k monthly active users",
+          "cause": "Spotify requires this minimum for extended quota.",
+          "action": "We found no alternative route. Keep Spotify features in a 5-user pilot, or design your product so it doesn't depend on them.",
+          "claimIds": [
+            "sp-mau"
+          ]
+        }
+      ]
+    }
+  ],
+  "nuances": [
+    {
+      "title": "Your agent may conflict with the AI rule",
+      "detail": "Spotify's policy bans ingesting Spotify Content into an AI model. Passing track data to a language model could fall under that, on any path. Get this answered before you build, ideally by asking Spotify.",
+      "claimIds": [
+        "sp-ai",
+        "sp-ai-agent"
+      ]
+    },
+    {
+      "title": "Individuals can't apply",
+      "detail": "Since May 15, 2025, Spotify only accepts extended quota applications from organizations.",
+      "claimIds": [
+        "sp-org"
+      ]
+    },
+    {
+      "title": "Composio can't shortcut this",
+      "detail": "Spotify is listed as bring-your-own, so you'd register the app and be subject to these limits yourself.",
+      "claimIds": []
+    },
+    {
+      "title": "Spotify publishes OAuth metadata",
+      "detail": "OIDC discovery responded at the standard path, so endpoints can be read from it.",
+      "claimIds": [
+        "sp-oidc"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "sp-5users",
+      "text": "Up to 5 authenticated users can use an app in development mode, and each must be allowlisted.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-premium",
+      "text": "The app owner needs Spotify Premium for development mode apps to work.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "must have a Spotify Premium account"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-403",
+      "text": "Requests from users who aren't allowlisted receive a 403.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "will receive a 403 status code error"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-org",
+      "text": "As of May 15, 2025, Spotify only accepts extended quota applications from organizations.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "only accepts applications from organizations"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-mau",
+      "text": "Extended quota requires at least 250k monthly active users.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "Maintaining a minimum of active users (at least 250k MAUs)"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-partner",
+      "text": "You apply through a partner form from a company email, then request the move in the dashboard.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "Tap on the Quota extension Request tab"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-weeks",
+      "text": "The extended quota review can take up to six weeks.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+          "title": "Quota modes",
+          "quote": "can take up to six weeks"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-ai",
+      "text": "Spotify's Developer Policy prohibits using its platform or content to train a machine learning or AI model, or ingesting Spotify Content into one.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.spotify.com/policy",
+          "title": "Spotify Developer Policy",
+          "quote": "Do not use the Spotify Platform or any Spotify Content to train a machine learning or AI model"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-ai-agent",
+      "text": "An agent that sends Spotify Content to a language model could count as ingesting it. The policy doesn't mention agents, so this is our reading rather than Spotify's statement.",
+      "label": "inferred",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-oidc",
+      "text": "accounts.spotify.com responded with HTTP 200 at the OIDC discovery path.",
+      "label": "tested",
+      "sources": [],
+      "probeRefs": [
+        "p1"
+      ],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "sp-partner-time",
+      "text": "How long the partner application itself takes wasn't established.",
+      "label": "unknown",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    }
+  ],
+  "unknowns": [
+    "How long the partner application takes before the six-week review begins.",
+    "Whether any exceptions to the 250k threshold exist. We found none."
+  ],
+  "slug": "spotify",
+  "generatedAt": "2026-11-04T18:12:58.796Z",
+  "origin": "reviewed_seed",
+  "model": null,
+  "probes": [
+    {
+      "id": "p1",
+      "url": "https://accounts.spotify.com/.well-known/openid-configuration",
+      "status": 200,
+      "observation": "Publishes OAuth metadata. issuer: \"https://accounts.spotify.com\"; authorization_endpoint: \"https://accounts.spotify.com/oauth2/v2/auth\"; token_endpoint: \"https://accounts.spotify.com/api/token\"; code_challenge_methods_supported: [\"S256\"].",
+      "checkedAt": "2026-11-04T18:13:19.136Z"
+    }
+  ]
+}

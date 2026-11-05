@@ -1,0 +1,339 @@
+{
+  "name": "GitHub",
+  "website": "https://github.com",
+  "category": "Developer tools",
+  "oauthSupport": "yes",
+  "summary": "Registering takes minutes and we found no approval step. The real decision is whether to use an OAuth app at all, because its scopes are broad and GitHub prefers GitHub Apps.",
+  "biggestRisk": "An OAuth app's repo scope also grants access to code, which is a lot of power for an agent that only needs to read issues.",
+  "paths": [
+    {
+      "id": "oauth-app",
+      "name": "Register an OAuth app",
+      "whenToUse": "You want your own name on the consent screen and broad scopes are acceptable.",
+      "gates": [],
+      "gatesKnown": true,
+      "handsOnHours": {
+        "min": 0.25,
+        "max": 0.5
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "none",
+        "note": "No approval step on this path.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Choose the scopes your agent actually needs",
+          "owner": "agent",
+          "detail": "List the agent's actions and map them to scopes. If the only fit is repo, read the note on GitHub Apps first.",
+          "minutes": {
+            "min": 5,
+            "max": 10
+          },
+          "confirm": "You have a short written list of scopes and a reason for each.",
+          "handoffReason": null,
+          "claimIds": [
+            "gh-repo",
+            "gh-prefer"
+          ]
+        },
+        {
+          "title": "Register the app",
+          "owner": "you",
+          "detail": "Go to Settings, Developer settings, OAuth apps, New OAuth App. Enter an application name, homepage URL and callback URL. Use the redirect URI from your Composio auth config as the callback.",
+          "minutes": {
+            "min": 5,
+            "max": 5
+          },
+          "confirm": "The app page shows a client ID.",
+          "handoffReason": "This requires signing in to your GitHub account.",
+          "claimIds": [
+            "gh-fields",
+            "gh-signin"
+          ]
+        },
+        {
+          "title": "Generate a client secret",
+          "owner": "you",
+          "detail": "Generate a secret on the app page and paste it straight into Composio.",
+          "minutes": {
+            "min": 2,
+            "max": 2
+          },
+          "confirm": "Your Composio auth config saves and shows an ac_ ID.",
+          "handoffReason": "The secret should only be handled by you, not passed through an agent.",
+          "claimIds": []
+        },
+        {
+          "title": "Connect a test account",
+          "owner": "you",
+          "detail": "Complete one connection with your own account and check the consent screen shows your app's name.",
+          "minutes": {
+            "min": 3,
+            "max": 5
+          },
+          "confirm": "The agent can make one API call as that user.",
+          "handoffReason": "A person has to approve the consent screen.",
+          "claimIds": []
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "The redirect fails with a redirect_uri mismatch",
+          "cause": "With wildcard matching off, the redirect URL must exactly match the callback URL.",
+          "action": "Copy the URI from Composio again. Check for trailing slashes and http versus https.",
+          "claimIds": [
+            "gh-redirect"
+          ]
+        },
+        {
+          "symptom": "Older sessions start failing after repeated connections",
+          "cause": "GitHub keeps ten tokens per user, app and scope combination, and revokes older ones beyond that.",
+          "action": "Reuse stored connections so each reconnect doesn't mint a new token, especially in testing.",
+          "claimIds": [
+            "gh-tokens"
+          ]
+        }
+      ]
+    }
+  ],
+  "nuances": [
+    {
+      "title": "GitHub prefers GitHub Apps",
+      "detail": "OAuth apps remain the right choice mainly when you need enterprise-level resources. Check that Composio's toolkit supports the flow you choose before you commit.",
+      "claimIds": [
+        "gh-prefer"
+      ]
+    },
+    {
+      "title": "Broad scopes",
+      "detail": "Reading issues or pull requests with an OAuth app takes the repo scope, which also covers code. That's a meaningful risk for an agent exposed to untrusted input.",
+      "claimIds": [
+        "gh-repo"
+      ]
+    },
+    {
+      "title": "Expiring tokens are on by default",
+      "detail": "Your integration must handle refresh. Each refresh token is single-use, and the old pair stops working.",
+      "claimIds": [
+        "gh-expiry",
+        "gh-expiry-default"
+      ]
+    },
+    {
+      "title": "No automatic discovery",
+      "detail": "GitHub didn't serve OIDC discovery at either standard path, so tools that auto-configure from metadata will need endpoints set by hand.",
+      "claimIds": [
+        "gh-no-oidc"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "gh-no-review",
+      "text": "The registration docs describe no review or approval step. Registration appears to finish when you click Register application, though we didn't create an app to confirm it.",
+      "label": "inferred",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-fields",
+      "text": "Registering needs an application name, homepage URL and authorization callback URL.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+          "title": "Creating an OAuth app",
+          "quote": "type the callback URL of your app"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-limit",
+      "text": "A user or organization can own up to 100 OAuth apps.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+          "title": "Creating an OAuth app",
+          "quote": "A user or organization can own up to 100 OAuth apps."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-prefer",
+      "text": "GitHub prefers GitHub Apps over OAuth apps in general.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps",
+          "title": "Differences between GitHub Apps and OAuth apps",
+          "quote": "In general, GitHub Apps are preferred over OAuth apps."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-repo",
+      "text": "Reading issues or pull requests through an OAuth app requires the repo scope, which also covers code.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps",
+          "title": "Differences between GitHub Apps and OAuth apps",
+          "quote": "GitHub Apps can request separate access to issues and pull requests without accessing the actual contents of the repository."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-redirect",
+      "text": "With wildcard matching off, the redirect URL must exactly match the callback URL.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+          "title": "Authorizing OAuth apps",
+          "quote": "the redirect URL must exactly match the callback URL"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-tokens",
+      "text": "GitHub limits tokens to ten per user, application and scope combination, and revokes existing tokens beyond that.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+          "title": "Authorizing OAuth apps",
+          "quote": "There is a limit of ten tokens that are issued per user/application/scope combination"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-expiry",
+      "text": "Expiring access tokens last eight hours, and refresh tokens last six months without use.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+          "title": "Authorizing OAuth apps",
+          "quote": "The access token expires after eight hours, and the refresh token expires after six months without use."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-expiry-default",
+      "text": "The option to expire user access tokens is enabled by default.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+          "title": "Creating an OAuth app",
+          "quote": "Expire user access tokens is enabled by default."
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-no-oidc",
+      "text": "GitHub returned 404 for OIDC discovery at both standard paths on github.com.",
+      "label": "tested",
+      "sources": [],
+      "probeRefs": [
+        "p1",
+        "p2"
+      ],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "gh-signin",
+      "text": "The new-app page redirects to sign-in, so registering needs an account.",
+      "label": "tested",
+      "sources": [],
+      "probeRefs": [
+        "p3"
+      ],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    }
+  ],
+  "unknowns": [
+    "We didn't create an app, so the steps come from GitHub's docs rather than a completed run."
+  ],
+  "slug": "github",
+  "generatedAt": "2026-11-04T18:12:58.796Z",
+  "origin": "reviewed_seed",
+  "model": null,
+  "probes": [
+    {
+      "id": "p1",
+      "url": "https://github.com/.well-known/openid-configuration",
+      "status": 404,
+      "observation": "No discovery document at this path.",
+      "checkedAt": "2026-11-04T18:12:58.798Z"
+    },
+    {
+      "id": "p2",
+      "url": "https://github.com/.well-known/oauth-authorization-server",
+      "status": 404,
+      "observation": "No discovery document at this path.",
+      "checkedAt": "2026-11-04T18:12:59.469Z"
+    },
+    {
+      "id": "p3",
+      "url": "https://github.com/settings/applications/new",
+      "status": 302,
+      "observation": "Redirects to a sign-in page (github.com/login), so this page needs an account.",
+      "checkedAt": "2026-11-04T18:12:59.848Z"
+    }
+  ]
+}

@@ -1,0 +1,410 @@
+{
+  "name": "Xero",
+  "website": "https://www.xero.com",
+  "category": "Accounting",
+  "oauthSupport": "yes",
+  "summary": "Starting is free and self-serve, but your app is capped at 5 connections until you add payment details. Growth moves through paid tiers, and joining the App Store adds customer references and a yearly security assessment.",
+  "biggestRisk": "Your connection cap, not your code, limits growth. Plan your tier before onboarding your sixth customer.",
+  "paths": [
+    {
+      "id": "starter",
+      "name": "Starter tier, up to 5 connections",
+      "whenToUse": "You're building, or piloting with a few organizations.",
+      "gates": [],
+      "gatesKnown": true,
+      "handsOnHours": {
+        "min": 0.5,
+        "max": 1
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "none",
+        "note": "No approval step on this path.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Register the app",
+          "owner": "you",
+          "detail": "In the Xero developer portal, create a web app and add the Composio redirect URI. Xero's PKCE support is S256 only.",
+          "minutes": {
+            "min": 10,
+            "max": 20
+          },
+          "confirm": "The app page shows a client ID and you can generate a secret.",
+          "handoffReason": "This requires a Xero account and accepting developer terms.",
+          "claimIds": [
+            "x-oidc"
+          ]
+        },
+        {
+          "title": "Test on the Demo Company",
+          "owner": "you",
+          "detail": "Connect the Demo Company first, so your testing doesn't use a real customer's connection.",
+          "minutes": {
+            "min": 10,
+            "max": 20
+          },
+          "confirm": "Your agent can read invoices from the demo organization.",
+          "handoffReason": "A person must approve the consent screen.",
+          "claimIds": [
+            "x-demo"
+          ]
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "A sixth organization can't connect",
+          "cause": "Starter is capped at 5 connections.",
+          "action": "Add payment details to move to Core, or free up slots with connection management.",
+          "claimIds": [
+            "x-starter",
+            "x-sixth"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paid-tiers",
+      "name": "Paid tiers, up to thousands of connections",
+      "whenToUse": "You've outgrown 5 connections.",
+      "gates": [
+        "fee"
+      ],
+      "gatesKnown": false,
+      "handsOnHours": {
+        "min": 0.25,
+        "max": 2
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "unknown",
+        "note": "Moving to Core looks immediate after adding payment details, but we couldn't confirm that. Moves above Core need an application, and we found no stated timing.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Estimate your tier",
+          "owner": "agent",
+          "detail": "Compare your connection forecast against the tier limits: Core 50, Plus 1,000, Advanced 10,000.",
+          "minutes": {
+            "min": 10,
+            "max": 20
+          },
+          "confirm": "You know your tier and its monthly fee.",
+          "handoffReason": null,
+          "claimIds": [
+            "x-tiers"
+          ]
+        },
+        {
+          "title": "Add payment or apply to move up",
+          "owner": "you",
+          "detail": "Add payment details to move to Core. Higher tiers need an application in the developer portal once you meet that tier's requirements.",
+          "minutes": {
+            "min": 5,
+            "max": 60
+          },
+          "confirm": "The portal shows your new tier.",
+          "handoffReason": "This requires your billing details.",
+          "claimIds": [
+            "x-sixth",
+            "x-apply"
+          ]
+        }
+      ],
+      "blockers": [
+        {
+          "symptom": "You're stuck at a tier's maximum",
+          "cause": "Connections are capped until you meet the next tier's requirements.",
+          "action": "Apply in the developer portal and ask Xero what the next tier requires, as we couldn't find the full list.",
+          "claimIds": [
+            "x-cap",
+            "x-tier-reqs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app-partner",
+      "name": "Become an App Store partner",
+      "whenToUse": "You want to be listed in the Xero App Store.",
+      "gates": [
+        "partner_agreement",
+        "customer_references",
+        "security_assessment"
+      ],
+      "gatesKnown": false,
+      "handsOnHours": {
+        "min": 40,
+        "max": 120
+      },
+      "wait": {
+        "minDays": null,
+        "maxDays": null,
+        "basis": "unknown",
+        "note": "We couldn't find a stated time for certification.",
+        "claimId": null
+      },
+      "steps": [
+        {
+          "title": "Find three customers",
+          "owner": "you",
+          "detail": "Xero's partner guide asks for at least three customers who love your app before certification.",
+          "minutes": null,
+          "confirm": "You have three named customers using the app.",
+          "handoffReason": "This depends on real customer relationships.",
+          "claimIds": [
+            "x-three"
+          ]
+        },
+        {
+          "title": "Pass certification and security assessment",
+          "owner": "you",
+          "detail": "Work through Xero's certification checkpoints, then complete the security assessment, which repeats yearly.",
+          "minutes": {
+            "min": 1200,
+            "max": 4800
+          },
+          "confirm": "Xero confirms your certification.",
+          "handoffReason": "Xero's security team reviews your submission.",
+          "claimIds": [
+            "x-security"
+          ]
+        }
+      ],
+      "blockers": []
+    }
+  ],
+  "nuances": [
+    {
+      "title": "Sources disagree on uncertified limits",
+      "detail": "A search result from Xero's connections page said organizations can connect to no more than 5 uncertified apps, while its FAQ gives an example of 2. Older forum posts mention a limit of 25. Check with Xero if this affects you.",
+      "claimIds": [
+        "x-conflict"
+      ]
+    },
+    {
+      "title": "Custom Connections are a different model",
+      "detail": "They're bought per organization and don't count toward the uncertified limit, so they can suit a single large customer.",
+      "claimIds": [
+        "x-custom"
+      ]
+    },
+    {
+      "title": "Composio can't provide this app",
+      "detail": "Xero is listed as bring-your-own, so you'd be subject to these tiers yourself.",
+      "claimIds": []
+    }
+  ],
+  "claims": [
+    {
+      "id": "x-starter",
+      "text": "The Starter tier is capped at 5 connections.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": "has unlimited data access to enable early innovation but is capped at 5 connections"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "x-sixth",
+      "text": "Adding a sixth connection requires payment details, which moves you to Core.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": "you will need to first add your payment details"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "x-tiers",
+      "text": "Connection maximums are Starter 5, Core 50, Plus 1,000, Advanced 10,000. Monthly fees are no charge, $35, $245 and $1,445 AUD, excluding tax. Enterprise has no limit, and its price is on application.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": null
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "model_confirmed",
+        "note": "Read in the pricing table by the research agent."
+      }
+    },
+    {
+      "id": "x-apply",
+      "text": "Since 2 March 2026 you can apply to move between tiers in the developer portal.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": "you can apply to move between tiers"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "x-cap",
+      "text": "Connections are capped at the tier maximums until you meet that tier's requirements.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": "Your connections are capped at the tier maximums"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "x-custom",
+      "text": "An organization can buy Custom Connections without affecting the uncertified app limit.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": "This won't affect the uncertified app limit"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "x-demo",
+      "text": "Using a demo company carries no charge.",
+      "label": "sourced",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/faq",
+          "title": "Xero Developer FAQ",
+          "quote": "no charge when using a demo company"
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "quote_matched",
+        "note": null
+      }
+    },
+    {
+      "id": "x-three",
+      "text": "Certification asks for at least three customers who love your app. We saw this only in a search result, because the page has no readable text without JavaScript.",
+      "label": "inferred",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/documentation/xero-app-store/app-partner-guides/app-partner-steps/",
+          "title": "Xero app partner guide",
+          "quote": null
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "unverified",
+        "note": "No exact passage was available to check."
+      }
+    },
+    {
+      "id": "x-security",
+      "text": "App partners undertake a security assessment reviewed by Xero's security team, and must pass it annually. We saw this only in a search result, because the page has no readable text without JavaScript.",
+      "label": "inferred",
+      "sources": [
+        {
+          "url": "https://developer.xero.com/documentation/xero-app-store/app-partner-guides/certification-checkpoints/",
+          "title": "Certification checkpoints",
+          "quote": null
+        }
+      ],
+      "probeRefs": [],
+      "check": {
+        "status": "unverified",
+        "note": "No exact passage was available to check."
+      }
+    },
+    {
+      "id": "x-oidc",
+      "text": "Xero publishes OAuth metadata showing S256 as its only PKCE method.",
+      "label": "tested",
+      "sources": [],
+      "probeRefs": [
+        "p1"
+      ],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "x-conflict",
+      "text": "The number of uncertified apps an organization can connect to is unresolved, because Xero's pages disagree.",
+      "label": "unknown",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    },
+    {
+      "id": "x-tier-reqs",
+      "text": "The full requirements for moving above the Core tier weren't established.",
+      "label": "unknown",
+      "sources": [],
+      "probeRefs": [],
+      "check": {
+        "status": "not_checked",
+        "note": null
+      }
+    }
+  ],
+  "unknowns": [
+    "How many uncertified apps an organization can connect to, as sources conflict.",
+    "What's needed to move above Core.",
+    "How long certification takes."
+  ],
+  "slug": "xero",
+  "generatedAt": "2026-11-04T18:12:58.796Z",
+  "origin": "reviewed_seed",
+  "model": null,
+  "probes": [
+    {
+      "id": "p1",
+      "url": "https://identity.xero.com/.well-known/openid-configuration",
+      "status": 200,
+      "observation": "Publishes OAuth metadata. issuer: \"https://identity.xero.com\"; authorization_endpoint: \"https://login.xero.com/identity/connect/authorize\"; token_endpoint: \"https://identity.xero.com/connect/token\"; code_challenge_methods_supported: [\"S256\"].",
+      "checkedAt": "2026-11-04T18:13:24.843Z"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "corrections": [
+    { "title": "Xero's connection limit", "detail": "Early research pointed to a limit of 25 connections, but that came from forum posts about six years old. Xero's FAQ now describes tiers from 5 connections to no limit, so the guide was rebuilt around them." },
+    { "title": "Spotify's real blockers", "detail": "Reading the quota page showed the 5-user cap and the 250k monthly user threshold. Reading the Developer Policy found a ban on ingesting Spotify Content into AI models. That changed the guide's biggest risk, since it matters more to an agent than any setup step." },
+    { "title": "Short quotes proved nothing", "detail": "The first check marked claims verified when words like \"403\" or \"minimum\" appeared on a page. Quotes now need at least 4 words, and we replaced the weak ones with real sentences." },
+    { "title": "Pages came back in Hindi", "detail": "Google localized a docs page based on location, which would have made English quote checks depend on where the server runs. Every request now asks for English." },
+    { "title": "Summaries weren't word-for-word", "detail": "A summarizing tool supplied a Composio quote that didn't match the page once a link was involved, and a Gmail passage was reworded. We now strip markdown links before matching, and we removed the passage we couldn't confirm." },
+    { "title": "Unsupported detail removed", "detail": "A statement that repeat Shopify cooldowns get longer had no matched passage, so it came out of the guide." },
+    { "title": "Which demo apps to show", "detail": "The first plan favored well-known apps. Composio's directory showed Slack, LinkedIn and others are already managed, so we added Spotify, Shopify and Xero, where developers must bring their own app and the challenges differ." }
+  ],
+  "unverified": [
+    "We didn't create an OAuth app with any provider or request any approval, because this run had no provider accounts. Steps come from documentation, and hands-on times are our estimates.",
+    "Xero's certification requirements appeared only in search results. The pages have no readable text without JavaScript, so those claims are shown as inferred.",
+    "Xero's limit on uncertified apps per organization is unresolved. A search result said 5, and its FAQ gives an example of 2.",
+    "Gmail's scope classifications and Xero's pricing table are table cells, so an agent read them, but no sentence could be matched.",
+    "Which scopes Composio's managed Gmail app is approved for, and how long Google's security assessment takes or costs.",
+    "Review times for Shopify's App Store and Google's sensitive scopes. The pages we read don't state them, so those waits are shown as unknown."
+  ]
+}

@@ -1,0 +1,708 @@
+{
+ "checkedAt": "2026-11-04T18:12:58.796Z",
+ "claims": [
+  {
+   "guide": "GitHub",
+   "claim": "gh-no-review",
+   "text": "The registration docs describe no review or approval step. Registration appears to finish when you click Register application, though we didn't create an app to confirm it.",
+   "url": null,
+   "quote": null,
+   "result": "inferred",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-fields",
+   "text": "Registering needs an application name, homepage URL and authorization callback URL.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+   "quote": "type the callback URL of your app",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-limit",
+   "text": "A user or organization can own up to 100 OAuth apps.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+   "quote": "A user or organization can own up to 100 OAuth apps.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-prefer",
+   "text": "GitHub prefers GitHub Apps over OAuth apps in general.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps",
+   "quote": "In general, GitHub Apps are preferred over OAuth apps.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-repo",
+   "text": "Reading issues or pull requests through an OAuth app requires the repo scope, which also covers code.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps",
+   "quote": "GitHub Apps can request separate access to issues and pull requests without accessing the actual contents of the repository.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-redirect",
+   "text": "With wildcard matching off, the redirect URL must exactly match the callback URL.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+   "quote": "the redirect URL must exactly match the callback URL",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-tokens",
+   "text": "GitHub limits tokens to ten per user, application and scope combination, and revokes existing tokens beyond that.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+   "quote": "There is a limit of ten tokens that are issued per user/application/scope combination",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-expiry",
+   "text": "Expiring access tokens last eight hours, and refresh tokens last six months without use.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+   "quote": "The access token expires after eight hours, and the refresh token expires after six months without use.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-expiry-default",
+   "text": "The option to expire user access tokens is enabled by default.",
+   "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+   "quote": "Expire user access tokens is enabled by default.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-no-oidc",
+   "text": "GitHub returned 404 for OIDC discovery at both standard paths on github.com.",
+   "url": null,
+   "quote": null,
+   "result": "probe_ran",
+   "note": null
+  },
+  {
+   "guide": "GitHub",
+   "claim": "gh-signin",
+   "text": "The new-app page redirects to sign-in, so registering needs an account.",
+   "url": null,
+   "quote": null,
+   "result": "probe_ran",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-send",
+   "text": "gmail.send is classified as a sensitive scope.",
+   "url": "https://developers.google.com/workspace/gmail/api/auth/scopes",
+   "quote": null,
+   "result": "agent_read_only",
+   "note": "Read in the scope table by the research agent. The classification is a table cell, so there's no sentence to match."
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-read",
+   "text": "gmail.readonly, gmail.modify, gmail.compose and full mail access are classified as restricted.",
+   "url": "https://developers.google.com/workspace/gmail/api/auth/scopes",
+   "quote": null,
+   "result": "agent_read_only",
+   "note": "Read in the scope table by the research agent. The classification is a table cell, so there's no sentence to match."
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-test-users",
+   "text": "Projects in Testing are limited to up to 100 test users.",
+   "url": "https://support.google.com/cloud/answer/15549945?hl=en",
+   "quote": "are limited to up to 100 test users",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-7day",
+   "text": "An External app in Testing gets a refresh token that expires in 7 days, unless it only requests basic identity scopes.",
+   "url": "https://developers.google.com/identity/protocols/oauth2",
+   "quote": "is issued a refresh token expiring in 7 days",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-100tokens",
+   "text": "There is a limit of 100 refresh tokens per Google Account per OAuth client, and the oldest is invalidated without warning.",
+   "url": "https://developers.google.com/identity/protocols/oauth2",
+   "quote": "limit of 100 refresh tokens per Google Account per OAuth 2.0 client ID",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-password",
+   "text": "A refresh token can stop working when a user changes their password and the token has Gmail scopes.",
+   "url": "https://developers.google.com/identity/protocols/oauth2",
+   "quote": "the refresh token contains Gmail scopes",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-internal",
+   "text": "Verification isn't required when an app is used only by people in your Workspace or Cloud Identity organization.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "the app is used only by people in your Google Workspace or Cloud Identity organization",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-brand",
+   "text": "Your home page must be public, and your privacy policy must be on the same domain and linked from the consent screen.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": null,
+   "result": "agent_read_only",
+   "note": "Read on the page by the research agent, which summarized this requirement rather than copying a passage."
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-brand-time",
+   "text": "Brand verification typically takes 2 to 3 business days if branding has changed.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "which typically takes 2-3 business days",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-domain",
+   "text": "Domain ownership is verified in Google Search Console by an Owner or Editor on the project.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "Verify ownership of your project's authorized domains within the Google Search Console",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-video",
+   "text": "The demo video must show the consent flow, the app name and the client ID in the address bar, and be uploaded as Unlisted on YouTube.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "browser address bar of the OAuth consent screen correctly includes your app's OAuth client ID",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-least",
+   "text": "Apps must request only the least privilege their features need.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "uses the least privilege necessary to provide the feature",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-permitted",
+   "text": "Apps requesting restricted scopes must show they are a permitted application type.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "demonstrate that they are a permitted application type",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-casa",
+   "text": "Apps that can reach restricted data through a third-party server must pass a security assessment from Google-empanelled assessors.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "must go through a security assessment from Google-empanelled security assessors",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-casa-annual",
+   "text": "Reverification is required at least every 12 months after Letter of Assessment approval.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "complete a security assessment at least every 12 months",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-weeks",
+   "text": "Restricted scope review can take several weeks.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "can potentially take several weeks to complete",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-window",
+   "text": "Compliant verification results are valid for 7 days.",
+   "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+   "quote": "Compliant verification results are valid for 7 days",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-console",
+   "text": "The Cloud Console's OAuth page redirects to sign-in, and Google publishes OAuth metadata including S256 PKCE.",
+   "url": null,
+   "quote": null,
+   "result": "probe_ran",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-managed-scopes",
+   "text": "Which Gmail scopes Composio's managed app is approved to request wasn't established.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  },
+  {
+   "guide": "Gmail",
+   "claim": "gm-casa-cost",
+   "text": "The cost of the security assessment wasn't stated on Google's pages. Ask assessors for a quote.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-5users",
+   "text": "Up to 5 authenticated users can use an app in development mode, and each must be allowlisted.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-premium",
+   "text": "The app owner needs Spotify Premium for development mode apps to work.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "must have a Spotify Premium account",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-403",
+   "text": "Requests from users who aren't allowlisted receive a 403.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "will receive a 403 status code error",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-org",
+   "text": "As of May 15, 2025, Spotify only accepts extended quota applications from organizations.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "only accepts applications from organizations",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-mau",
+   "text": "Extended quota requires at least 250k monthly active users.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "Maintaining a minimum of active users (at least 250k MAUs)",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-partner",
+   "text": "You apply through a partner form from a company email, then request the move in the dashboard.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "Tap on the Quota extension Request tab",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-weeks",
+   "text": "The extended quota review can take up to six weeks.",
+   "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+   "quote": "can take up to six weeks",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-ai",
+   "text": "Spotify's Developer Policy prohibits using its platform or content to train a machine learning or AI model, or ingesting Spotify Content into one.",
+   "url": "https://developer.spotify.com/policy",
+   "quote": "Do not use the Spotify Platform or any Spotify Content to train a machine learning or AI model",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-ai-agent",
+   "text": "An agent that sends Spotify Content to a language model could count as ingesting it. The policy doesn't mention agents, so this is our reading rather than Spotify's statement.",
+   "url": null,
+   "quote": null,
+   "result": "inferred",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-oidc",
+   "text": "accounts.spotify.com responded with HTTP 200 at the OIDC discovery path.",
+   "url": null,
+   "quote": null,
+   "result": "probe_ran",
+   "note": null
+  },
+  {
+   "guide": "Spotify",
+   "claim": "sp-partner-time",
+   "text": "How long the partner application itself takes wasn't established.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-custom",
+   "text": "Custom distribution covers one store, stores in one Plus organization or development stores, and needs no approval.",
+   "url": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "on multiple stores that belong to the same Plus organization",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-permanent",
+   "text": "You can't change the distribution method after you select it.",
+   "url": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "You can't change the distribution method after you select it.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-billing",
+   "text": "Custom apps can't charge merchants through Shopify's billing system.",
+   "url": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Can't charge merchants through Shopify's app billing system",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-levels",
+   "text": "Level 2 covers customer data including name, address, phone or email fields.",
+   "url": "https://shopify.dev/docs/apps/launch/protected-customer-data",
+   "quote": "Customer data including name, address, phone, or email fields",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-pcd-timing",
+   "text": "You can't apply for protected customer data while an app is under review.",
+   "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+   "quote": "isn't possible while the app is under review",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-webhooks",
+   "text": "Apps distributed through the App Store must subscribe to compliance webhooks.",
+   "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+   "quote": "must subscribe to compliance webhooks",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-checks",
+   "text": "You complete automated checks and prepare your app before submitting it for review.",
+   "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+   "quote": "After you complete the automated checks",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-email",
+   "text": "Shopify advises adding its address to your allowed senders to receive review emails.",
+   "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+   "quote": "to your allowed senders list",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-cooldown",
+   "text": "Repeatedly failing to address issues can put you in a temporary cooldown, during which you can't submit.",
+   "url": "https://shopify.dev/docs/apps/launch/app-store-review/submit-app-for-review",
+   "quote": "might be placed in a temporary cooldown period",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-dev-stores",
+   "text": "Apps installed only on development stores don't need a protected customer data review.",
+   "url": "https://shopify.dev/docs/apps/launch/protected-customer-data",
+   "quote": "You don't need to submit a request for review for apps that are installed only on development stores.",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-minimum",
+   "text": "Shopify approves protected data access if it's the minimum required.",
+   "url": "https://shopify.dev/docs/apps/launch/protected-customer-data",
+   "quote": "the requested data is the minimum amount required by your app",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-signup",
+   "text": "The partner signup page redirects to Shopify's sign-in, so creating an app needs an account.",
+   "url": null,
+   "quote": null,
+   "result": "probe_ran",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-time",
+   "text": "Shopify's review duration wasn't stated on the pages we read.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-fee",
+   "text": "Public distribution requires registering for the Shopify App Store, which has a one-time fee.",
+   "url": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Public distribution also requires registering for the Shopify App Store",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Shopify",
+   "claim": "sh-fee-amount",
+   "text": "The amount of the one-time registration fee wasn't on the pages we read.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-starter",
+   "text": "The Starter tier is capped at 5 connections.",
+   "url": "https://developer.xero.com/faq",
+   "quote": "has unlimited data access to enable early innovation but is capped at 5 connections",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-sixth",
+   "text": "Adding a sixth connection requires payment details, which moves you to Core.",
+   "url": "https://developer.xero.com/faq",
+   "quote": "you will need to first add your payment details",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-tiers",
+   "text": "Connection maximums are Starter 5, Core 50, Plus 1,000, Advanced 10,000. Monthly fees are no charge, $35, $245 and $1,445 AUD, excluding tax. Enterprise has no limit, and its price is on application.",
+   "url": "https://developer.xero.com/faq",
+   "quote": null,
+   "result": "agent_read_only",
+   "note": "Read in the pricing table by the research agent."
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-apply",
+   "text": "Since 2 March 2026 you can apply to move between tiers in the developer portal.",
+   "url": "https://developer.xero.com/faq",
+   "quote": "you can apply to move between tiers",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-cap",
+   "text": "Connections are capped at the tier maximums until you meet that tier's requirements.",
+   "url": "https://developer.xero.com/faq",
+   "quote": "Your connections are capped at the tier maximums",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-custom",
+   "text": "An organization can buy Custom Connections without affecting the uncertified app limit.",
+   "url": "https://developer.xero.com/faq",
+   "quote": "This won't affect the uncertified app limit",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-demo",
+   "text": "Using a demo company carries no charge.",
+   "url": "https://developer.xero.com/faq",
+   "quote": "no charge when using a demo company",
+   "result": "quote_matched",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-three",
+   "text": "Certification asks for at least three customers who love your app. We saw this only in a search result, because the page has no readable text without JavaScript.",
+   "url": "https://developer.xero.com/documentation/xero-app-store/app-partner-guides/app-partner-steps/",
+   "quote": null,
+   "result": "failed",
+   "note": "No exact passage was available to check."
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-security",
+   "text": "App partners undertake a security assessment reviewed by Xero's security team, and must pass it annually. We saw this only in a search result, because the page has no readable text without JavaScript.",
+   "url": "https://developer.xero.com/documentation/xero-app-store/app-partner-guides/certification-checkpoints/",
+   "quote": null,
+   "result": "failed",
+   "note": "No exact passage was available to check."
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-oidc",
+   "text": "Xero publishes OAuth metadata showing S256 as its only PKCE method.",
+   "url": null,
+   "quote": null,
+   "result": "probe_ran",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-conflict",
+   "text": "The number of uncertified apps an organization can connect to is unresolved, because Xero's pages disagree.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  },
+  {
+   "guide": "Xero",
+   "claim": "x-tier-reqs",
+   "text": "The full requirements for moving above the Core tier weren't established.",
+   "url": null,
+   "quote": null,
+   "result": "unknown",
+   "note": null
+  }
+ ],
+ "probes": [
+  {
+   "id": "p1",
+   "url": "https://github.com/.well-known/openid-configuration",
+   "status": 404,
+   "observation": "No discovery document at this path.",
+   "checkedAt": "2026-11-04T18:12:58.798Z",
+   "guide": "GitHub"
+  },
+  {
+   "id": "p2",
+   "url": "https://github.com/.well-known/oauth-authorization-server",
+   "status": 404,
+   "observation": "No discovery document at this path.",
+   "checkedAt": "2026-11-04T18:12:59.469Z",
+   "guide": "GitHub"
+  },
+  {
+   "id": "p3",
+   "url": "https://github.com/settings/applications/new",
+   "status": 302,
+   "observation": "Redirects to a sign-in page (github.com/login), so this page needs an account.",
+   "checkedAt": "2026-11-04T18:12:59.848Z",
+   "guide": "GitHub"
+  },
+  {
+   "id": "p1",
+   "url": "https://accounts.google.com/.well-known/openid-configuration",
+   "status": 200,
+   "observation": "Publishes OAuth metadata. issuer: \"https://accounts.google.com\"; authorization_endpoint: \"https://accounts.google.com/o/oauth2/v2/auth\"; token_endpoint: \"https://oauth2.googleapis.com/token\"; code_challenge_methods_supported: [\"plain\",\"S256\"].",
+   "checkedAt": "2026-11-04T18:13:01.153Z",
+   "guide": "Gmail"
+  },
+  {
+   "id": "p2",
+   "url": "https://console.cloud.google.com/auth/overview",
+   "status": 302,
+   "observation": "Redirects to a sign-in page (accounts.google.com/ServiceLogin), so this page needs an account.",
+   "checkedAt": "2026-11-04T18:13:01.322Z",
+   "guide": "Gmail"
+  },
+  {
+   "id": "p1",
+   "url": "https://accounts.spotify.com/.well-known/openid-configuration",
+   "status": 200,
+   "observation": "Publishes OAuth metadata. issuer: \"https://accounts.spotify.com\"; authorization_endpoint: \"https://accounts.spotify.com/oauth2/v2/auth\"; token_endpoint: \"https://accounts.spotify.com/api/token\"; code_challenge_methods_supported: [\"S256\"].",
+   "checkedAt": "2026-11-04T18:13:19.136Z",
+   "guide": "Spotify"
+  },
+  {
+   "id": "p1",
+   "url": "https://partners.shopify.com/signup",
+   "status": 302,
+   "observation": "Redirects to a sign-in page (accounts.shopify.com/oauth/authorize), so this page needs an account.",
+   "checkedAt": "2026-11-04T18:13:22.401Z",
+   "guide": "Shopify"
+  },
+  {
+   "id": "p1",
+   "url": "https://identity.xero.com/.well-known/openid-configuration",
+   "status": 200,
+   "observation": "Publishes OAuth metadata. issuer: \"https://identity.xero.com\"; authorization_endpoint: \"https://login.xero.com/identity/connect/authorize\"; token_endpoint: \"https://identity.xero.com/connect/token\"; code_challenge_methods_supported: [\"S256\"].",
+   "checkedAt": "2026-11-04T18:13:24.843Z",
+   "guide": "Xero"
+  }
+ ],
+ "composio": [
+  {
+   "id": "custody",
+   "text": "Your own OAuth app changes who owns the app, its branding, scopes and quota. Composio still stores and refreshes tokens.",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+   "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "result": "matched"
+  },
+  {
+   "id": "default",
+   "text": "Toolkits you don't list in authConfigs keep using Composio managed auth, so you can switch one toolkit at a time.",
+   "url": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app",
+   "quote": "Toolkits you leave out keep using Composio managed auth.",
+   "result": "matched"
+  }
+ ]
+}
