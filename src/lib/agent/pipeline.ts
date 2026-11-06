@@ -239,8 +239,10 @@ async function research(query: string, statusNote: string, { client, emit, signa
       );
     } catch (error) {
       if (!isInvalidModelOutput(error)) throw error;
+      console.warn(`Groq rejected a research reply: ${String((error as Error).message).slice(0, 300)}`);
       // These fail quickly and do no work, so a few don't use up a research turn.
-      if (++invalidReplies <= MAX_INVALID_REPLIES) turn--;
+      if (++invalidReplies > MAX_INVALID_REPLIES) break;
+      turn--;
       continue;
     }
 
@@ -284,6 +286,11 @@ async function research(query: string, statusNote: string, { client, emit, signa
       const args = safeJson(call.function.arguments) as Record<string, unknown> | null;
       messages.push({ role: "tool", tool_call_id: call.id, content: await runTool(call.function.name, args) });
     }
+  }
+  // The passages are already real and cited by id, so they can stand in for the notes rather than losing the run.
+  if (passages.size > 0) {
+    emit({ stage: "research", message: "The research agent couldn't write its notes, so the guide will be written directly from the passages it read." });
+    return finished([...passages].map(([id, { quote }]) => `${quote} [${id}]`).join("\n").slice(0, budget.notesChars));
   }
   throw new Error("Research didn't finish within its turn limit.");
 }
@@ -494,6 +501,6 @@ export async function generateGuide(query: string, options: { client: Groq; emit
     model: MODEL,
     probes,
   };
-  emit({ stage: "publish", message: "Guide ready." });
+  emit({ stage: "publish", message: "Saving the guide." });
   return guide;
 }

@@ -6,6 +6,8 @@ import { createClient, generateGuide, type ProgressEvent } from "./pipeline";
 const TIME_LIMIT_MS = 8 * 60_000;
 const JOB_RETENTION_MS = 60 * 60_000;
 
+class SaveError extends Error {}
+
 export type JobEvent =
   | ({ type: "progress" } & ProgressEvent)
   | { type: "done"; slug: string }
@@ -63,7 +65,11 @@ export function startJob(query: string, ip: string, client = createClient()): Jo
   const timeout = AbortSignal.timeout(TIME_LIMIT_MS);
   generateGuide(query, { client, signal: timeout, emit: (event) => push({ type: "progress", ...event }) })
     .then((guide) => {
-      saveGuide(guide);
+      try {
+        saveGuide(guide);
+      } catch (cause) {
+        throw new SaveError("The guide couldn't be saved.", { cause });
+      }
       job.finished = true;
       push({ type: "done", slug: guide.slug });
     })
@@ -80,6 +86,7 @@ export function startJob(query: string, ip: string, client = createClient()): Jo
 }
 
 function describeFailure(error: unknown, timeout: AbortSignal) {
+  if (error instanceof SaveError) return "The guide was written, but the server couldn't save it, so it wasn't published. Please try again later.";
   if (timeout.aborted) return "The investigation hit its 8-minute limit before finishing, so no guide was published.";
   if (error instanceof Groq.AuthenticationError) return "Live generation isn't set up correctly: the API key was rejected.";
   if (error instanceof Groq.RateLimitError) return "This demo has hit its AI usage limit. Please try again later, or browse the library.";

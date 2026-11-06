@@ -194,6 +194,28 @@ describe("generation pipeline", () => {
     expect(create.mock.calls[5]![0].response_format.json_schema.name).toBe("oauth_guide");
   });
 
+  describe("when the model's replies keep being rejected", () => {
+    const malformed = new Groq.BadRequestError(400, undefined, "tool_use_failed: attempted to call tool 'search'", new Headers());
+
+    it("writes the guide from the passages already read, instead of losing the run", async () => {
+      const create = vi.fn();
+      create.mockResolvedValueOnce(calls(toolCall("t1", "fetch_page", { url: "https://docs.acme.test/oauth", looking_for: "review" })));
+      for (let attempt = 0; attempt < 5; attempt++) create.mockRejectedValueOnce(malformed);
+      create.mockResolvedValueOnce(text(JSON.stringify({ ...DRAFT, claims: [quoted("right", "a real passage")] })));
+      create.mockResolvedValueOnce(text(JSON.stringify({ verdicts: [] })));
+      const { guide, events } = await run({ chat: { completions: { create } } } as unknown as Groq);
+      expect(guide.name).toBe("Acme");
+      expect(create.mock.calls[6]![0].messages.at(-1).content).toContain("Page text about the requirements. [P1]");
+      expect(events.map((event) => event.message).join("\n")).toContain("directly from the passages");
+    });
+
+    it("fails clearly when nothing was read", async () => {
+      const create = vi.fn().mockRejectedValue(malformed);
+      await expect(run({ chat: { completions: { create } } } as unknown as Groq)).rejects.toThrow("turn limit");
+      expect(create).toHaveBeenCalledTimes(5);
+    });
+  });
+
   it("wraps up instead of failing when a research turn is cut off", async () => {
     const { client, requests } = scriptedClient([
       text("Long search output", "length"),
