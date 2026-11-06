@@ -31,7 +31,7 @@ export const SourceSchema = z.strictObject({
   quote: z
     .string()
     .nullable()
-    .describe("Short passage copied word for word from the page, or null if there is no exact passage"),
+    .describe("The id of the passage this came from, such as P12, or null if there is none. Code replaces it with the exact words"),
 });
 
 export const RangeSchema = z.strictObject({ min: z.number(), max: z.number() });
@@ -66,7 +66,7 @@ export const WaitSchema = z.strictObject({
   maxDays: z.number().nullable(),
   basis: z.enum(WAIT_BASES),
   note: z.string(),
-  claimId: z.string().nullable().describe("Claim supporting a provider_stated or community_reported wait"),
+  claimId: z.string().nullable().describe("Claim supporting a provider_stated or community_reported wait, or stating that a path with no gates needs no approval"),
 });
 
 export const PathSchema = z.strictObject({

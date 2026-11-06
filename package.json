@@ -14,7 +14,7 @@
     "generate": "tsx scripts/generate.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "1.4.0",
+    "groq-sdk": "1.6.0",
     "next": "16.4.5",
     "react": "19.3.1",
     "react-dom": "19.3.1",

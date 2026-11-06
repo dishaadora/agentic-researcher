@@ -7,13 +7,20 @@ export type QuoteResult =
 
 const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", rsquo: "'", lsquo: "'", ldquo: '"', rdquo: '"', ndash: "-", mdash: "-" };
 
-export function normalizeText(input: string) {
+/** A page's readable text, with its original case and punctuation so passages can be copied from it. */
+export function toPlainText(input: string) {
   return input
     .replace(/<(script|style|noscript)\b[\s\S]*?<\/\1>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
     .replace(/&#x([\da-f]+);/gi, (_, code: string) => String.fromCodePoint(parseInt(code, 16)))
     .replace(/&([a-z]+);/gi, (match, name: string) => ENTITIES[name.toLowerCase()] ?? match)
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function normalizeText(input: string) {
+  return toPlainText(input)
     .replace(/[‘’]/g, "'")
     .replace(/[“”]/g, '"')
     .replace(/[–—]/g, "-")
@@ -31,7 +38,7 @@ export function quoteAppears(page: string, quote: string) {
 }
 
 /** Many docs sites publish clean markdown at <url>.md and render the HTML with JavaScript. */
-function candidates(url: string) {
+export function candidates(url: string) {
   const clean = url.split("#")[0]!.replace(/\/$/, "");
   return clean.endsWith(".md") || clean.endsWith(".pdf") ? [clean] : [clean, `${clean}.md`];
 }

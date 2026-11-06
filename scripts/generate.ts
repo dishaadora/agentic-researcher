@@ -1,5 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { generateGuide } from "../src/lib/agent/pipeline";
+import { createClient, generateGuide } from "../src/lib/agent/pipeline";
 import { saveGuide } from "../src/lib/store";
 
 /**
@@ -18,7 +17,7 @@ if (names.length === 0) {
   process.exit(1);
 }
 
-const client = new Anthropic();
+const client = createClient();
 for (const name of names) {
   const started = Date.now();
   console.log(`\n${name}`);

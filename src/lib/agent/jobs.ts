@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 import { saveGuide } from "../store";
-import { generateGuide, type ProgressEvent } from "./pipeline";
+import { createClient, generateGuide, type ProgressEvent } from "./pipeline";
 
 const TIME_LIMIT_MS = 8 * 60_000;
 const JOB_RETENTION_MS = 60 * 60_000;
@@ -24,7 +24,7 @@ const state: JobState = ((globalThis as unknown as { __jobs?: JobState }).__jobs
 
 export const getJob = (id: string) => state.jobs.get(id) ?? null;
 
-export const isConfigured = () => Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
+export const isConfigured = () => Boolean(process.env.GROQ_API_KEY);
 
 const dedupeKey = (query: string) => query.trim().toLowerCase();
 
@@ -35,7 +35,7 @@ export function checkLimits(ip: string): string | null {
     state.dayStart = now;
     state.dayCount = 0;
   }
-  if (state.dayCount >= Number(process.env.MAX_GENERATIONS_PER_DAY || 30)) {
+  if (state.dayCount >= Number(process.env.MAX_GENERATIONS_PER_DAY || 5)) {
     return "This demo has reached its daily generation limit. Try again tomorrow, or browse the library.";
   }
   const recent = (state.perIp.get(ip) ?? []).filter((time) => now - time < 60 * 60_000);
@@ -46,7 +46,7 @@ export function checkLimits(ip: string): string | null {
   return null;
 }
 
-export function startJob(query: string, ip: string, client = new Anthropic()): Job {
+export function startJob(query: string, ip: string, client = createClient()): Job {
   for (const job of state.jobs.values()) {
     if (!job.finished && dedupeKey(job.query) === dedupeKey(query)) return job;
   }
@@ -81,8 +81,9 @@ export function startJob(query: string, ip: string, client = new Anthropic()): J
 
 function describeFailure(error: unknown, timeout: AbortSignal) {
   if (timeout.aborted) return "The investigation hit its 8-minute limit before finishing, so no guide was published.";
-  if (error instanceof Anthropic.AuthenticationError) return "Live generation isn't set up correctly: the API key was rejected.";
-  if (error instanceof Anthropic.RateLimitError) return "The AI service is rate limiting this demo. Please try again in a few minutes.";
-  if (error instanceof Anthropic.APIError) return "The AI service returned an error. Please try again.";
+  if (error instanceof Groq.AuthenticationError) return "Live generation isn't set up correctly: the API key was rejected.";
+  if (error instanceof Groq.RateLimitError) return "This demo has hit its AI usage limit. Please try again later, or browse the library.";
+  if (error instanceof Groq.APIError && error.status === 413) return "This investigation grew too large for this demo's AI usage limit, so no guide was published.";
+  if (error instanceof Groq.APIError) return "The AI service returned an error. Please try again.";
   return error instanceof Error && /step|turn limit|format/.test(error.message) ? error.message : "Something went wrong during generation. Please try again.";
 }

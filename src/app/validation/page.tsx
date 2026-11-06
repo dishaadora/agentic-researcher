@@ -39,8 +39,8 @@ export default function ValidationPage() {
         <ol>
           <li><strong>Tested</strong> needs a real request made by our code. The model can't award this label itself.</li>
           <li><strong>Sourced</strong> needs a link. Code then looks for the cited passage on the live page, and a passage under {4} words doesn't count.</li>
-          <li>If that fails, a separate agent reads the page without seeing the draft. If the page contradicts the claim, it's marked as disputed. If it can't tell, the claim drops to <strong>Inferred</strong>.</li>
-          <li>Difficulty comes from a fixed rule based on each route's hardest requirement, not the model's opinion.</li>
+          <li>If that fails, a separate agent reads excerpts of the page without seeing the draft. If the page contradicts the claim, it's marked as disputed. If it can't tell, the claim drops to <strong>Inferred</strong>.</li>
+          <li>Difficulty comes from a fixed rule based on each route's hardest requirement, not the model's opinion. In live guides, a route with no requirements is only rated Easy if a checked claim says no approval is needed. Otherwise it's Unclear.</li>
         </ol>
       </section>
 

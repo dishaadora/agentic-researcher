@@ -19,6 +19,56 @@ export function normalizeClaims(draft: GuideDraft, probes: Probe[]): GuideDraft[
   });
 }
 
+export type Passage = { url: string; quote: string };
+
+const PASSAGE_IDS = /^\W*P\d+(\W+P\d+)*\W*$/i;
+
+/**
+ * The model cites passages by id and code fills in the exact words and URL, so it can't reword a
+ * quote or attach one to another page. A citation to a passage that doesn't exist is dropped.
+ */
+export function resolvePassages(claims: GuideDraft["claims"], passages: Map<string, Passage>): GuideDraft["claims"] {
+  return claims.map((claim) => ({
+    ...claim,
+    sources: claim.sources.flatMap((source) => {
+      if (!source.quote || !PASSAGE_IDS.test(source.quote)) return [source];
+      const ids = source.quote.match(/P\d+/gi) ?? [];
+      return ids.flatMap((id) => {
+        const passage = passages.get(id.toUpperCase());
+        return passage ? [{ title: source.title || passage.url, ...passage }] : [];
+      });
+    }),
+  }));
+}
+
+/**
+ * In live runs only code writes "tested" claims. A model can cite a real probe for something it never
+ * showed: one marked PKCE support as tested using a discovery document from a company's online store.
+ */
+export function demoteModelTested(claims: GuideDraft["claims"]): GuideDraft["claims"] {
+  return claims.map((claim) =>
+    claim.label === "tested" ? { ...claim, label: claim.sources.length > 0 ? "sourced" : "inferred", probeRefs: [] } : claim,
+  );
+}
+
+/** Writes "tested" claims directly from what probes saw, stating only what was observed. */
+export function probeClaims(probes: Probe[]): GuideDraft["claims"] {
+  const ran = probes.filter((probe) => probe.status !== null);
+  const tested = (id: string, text: string, probeRefs: string[]): GuideDraft["claims"][number] => ({ id, text, label: "tested", sources: [], probeRefs });
+  const result = ran
+    .filter((probe) => /^(Publishes OAuth metadata|Serves OAuth metadata|Redirects to a sign-in page)/.test(probe.observation))
+    .map((probe) => tested(`probe-${probe.id}`, `${probe.url}: ${probe.observation}`, [probe.id]));
+
+  // Only a clear 404 counts as "not found". A foreign issuer or a redirect says nothing about this API.
+  const discovery = ran.filter((probe) => probe.url.includes("/.well-known/"));
+  const missing = discovery.filter((probe) => probe.status === 404);
+  if (missing.length > 0 && !discovery.some((probe) => probe.observation.startsWith("Publishes OAuth metadata"))) {
+    const urls = missing.map((probe) => probe.url).join(", ");
+    result.push(tested("probe-no-discovery", `No OAuth discovery document was found at ${urls}, so endpoints must be taken from the provider's docs.`, missing.map((probe) => probe.id)));
+  }
+  return result;
+}
+
 /** Checks each sourced claim by looking for its quote on the page, with no model involved. */
 export async function checkClaimQuotes(claims: GuideDraft["claims"], signal?: AbortSignal) {
   const results = new Map<string, CheckResult>();
@@ -59,11 +109,44 @@ export function applyChecks(claims: GuideDraft["claims"], checks: Map<string, Ch
   });
 }
 
+const confirmedIds = (claims: Guide["claims"]) =>
+  new Set(claims.filter((claim) => claim.label === "sourced" || claim.label === "tested").map((claim) => claim.id));
+
+/**
+ * Finding no gates doesn't show there are none. A path only stays self-serve if a claim that survived
+ * checking says so, and otherwise its rating and wait both say that it's unclear.
+ */
+export function requireApprovalEvidence(paths: GuideDraft["paths"], claims: Guide["claims"]): GuideDraft["paths"] {
+  const confirmed = confirmedIds(claims);
+  return paths.map((path) => {
+    if (path.gates.length > 0) return path;
+    if (path.gatesKnown && path.wait.claimId !== null && confirmed.has(path.wait.claimId)) return path;
+    return {
+      ...path,
+      gatesKnown: false,
+      wait: path.wait.basis === "none" ? { minDays: null, maxDays: null, basis: "unknown" as const, note: "We couldn't confirm whether this route needs approval.", claimId: null } : path.wait,
+    };
+  });
+}
+
+const HANDOFF_FALLBACK = {
+  you: "An agent can't do this for you, because it has no access to your account.",
+  provider: "Only the provider can do this, so you have to wait for it.",
+};
+
+/** The prompt asks for a reason on every handoff, but the model sometimes leaves it out. */
+export function explainHandoffs(paths: GuideDraft["paths"]): GuideDraft["paths"] {
+  return paths.map((path) => ({
+    ...path,
+    steps: path.steps.map((step) => (step.owner === "agent" || step.handoffReason?.trim() ? step : { ...step, handoffReason: HANDOFF_FALLBACK[step.owner] })),
+  }));
+}
+
 /** A wait can only be called provider-stated if the claim behind it survived checking. */
 export function reconcileWaits(paths: GuideDraft["paths"], claims: Guide["claims"]): GuideDraft["paths"] {
   const ids = new Set(claims.map((claim) => claim.id));
   const keepKnown = (list: string[]) => list.filter((id) => ids.has(id));
-  const confirmed = new Set(claims.filter((claim) => claim.label === "sourced" || claim.label === "tested").map((claim) => claim.id));
+  const confirmed = confirmedIds(claims);
   return paths.map((path) => {
     const { wait } = path;
     const needsSupport = wait.basis === "provider_stated" || wait.basis === "community_reported";
