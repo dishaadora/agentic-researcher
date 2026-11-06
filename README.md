@@ -4,6 +4,8 @@ Tells a developer building an AI agent what it really takes to get a provider's 
 
 Look up an app and you get a shareable guide. If there's no guide yet, an agent investigates the app live and publishes one.
 
+**Live site:** https://oauth-trailhead.onrender.com/
+
 ## Run it
 
 Requires Node 20.9 or later.
