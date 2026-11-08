@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 import { checkApp, squash, type AppCheck } from "@/lib/app-check";
+import { saveControlToken } from "@/lib/run-control";
 
 type Problem = Exclude<AppCheck, { ok: true }>;
 
@@ -23,8 +24,9 @@ export function SubmitForm({ names }: { names: string[] }) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ query: app }),
       });
-      const result = (await response.json()) as { slug?: string; jobId?: string; error?: string };
+      const result = (await response.json()) as { slug?: string; jobId?: string; controlToken?: string; error?: string };
       if (result.slug) return router.push(`/guides/${result.slug}`);
+      if (result.jobId && result.controlToken) saveControlToken(result.jobId, result.controlToken);
       if (result.jobId) return router.push(`/generate/${result.jobId}?app=${encodeURIComponent(app)}`);
       setError(result.error ?? "That didn't work. Please try again.");
     } catch {

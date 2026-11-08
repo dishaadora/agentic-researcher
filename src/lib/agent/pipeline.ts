@@ -50,7 +50,12 @@ const budgets = () => {
 export type Stage = "identify" | "research" | "draft" | "verify" | "publish";
 export type ProgressEvent = { stage: Stage; message: string };
 type Emit = (event: ProgressEvent) => void;
-type Context = { client: Groq; emit: Emit; signal: AbortSignal };
+/**
+ * `checkpoint` is awaited between steps. It resolves straight away unless the run is paused, in which
+ * case it waits for a resume, and it throws once the run is aborted.
+ */
+type Context = { client: Groq; emit: Emit; signal: AbortSignal; checkpoint: () => Promise<void> };
+export type GenerateOptions = { client: Groq; emit: Emit; signal: AbortSignal; checkpoint?: () => Promise<void> };
 
 /** Waits and retries on 429s, which are routine at these limits. */
 export const createClient = () => new Groq({ maxRetries: 5 });
@@ -141,8 +146,9 @@ const cleanNotes = (text: string, maxChars: number) =>
   text.replace(/【[^】]*】/g, "").trim().slice(-maxChars);
 
 /** Links come from Groq's search results rather than the model's reply, so they're real pages. */
-async function searchWeb(query: string, { client, signal }: Pick<Context, "client" | "signal">) {
+async function searchWeb(query: string, { client, signal, checkpoint }: Pick<Context, "client" | "signal" | "checkpoint">) {
   for (let attempt = 0; attempt < SEARCH_ATTEMPTS; attempt++) {
+    await checkpoint();
     try {
       const completion = await client.chat.completions.create(
         {
@@ -165,7 +171,7 @@ async function searchWeb(query: string, { client, signal }: Pick<Context, "clien
   return [];
 }
 
-async function research(query: string, statusNote: string, { client, emit, signal }: Context) {
+async function research(query: string, statusNote: string, { client, emit, signal, checkpoint }: Context) {
   const budget = budgets();
   const probes: Probe[] = [];
   const passages = new Map<string, Passage>();
@@ -189,7 +195,7 @@ async function research(query: string, statusNote: string, { client, emit, signa
       if (searches >= MAX_SEARCHES) return "Error: search limit reached. Read the pages you've found, or finish with what you have.";
       searches += 1;
       emit({ stage: "research", message: `Searching: ${args.query}` });
-      const pages = await searchWeb(args.query, { client, signal });
+      const pages = await searchWeb(args.query, { client, signal, checkpoint });
       return pages.length > 0 ? JSON.stringify(pages) : "No results. Try fetch_page on the provider's developer docs.";
     }
     const url = args?.url;
@@ -222,6 +228,7 @@ async function research(query: string, statusNote: string, { client, emit, signa
   };
 
   for (let turn = 0; turn < MAX_RESEARCH_TURNS; turn++) {
+    await checkpoint();
     const lastTurn = finishNow || turn === MAX_RESEARCH_TURNS - 1;
     compact(messages, budget.researchPromptTokens);
 
@@ -283,6 +290,7 @@ async function research(query: string, statusNote: string, { client, emit, signa
 
     messages.push({ role: "assistant", content: message.content ?? "", tool_calls: toolCalls });
     for (const call of toolCalls) {
+      await checkpoint();
       const args = safeJson(call.function.arguments) as Record<string, unknown> | null;
       messages.push({ role: "tool", tool_call_id: call.id, content: await runTool(call.function.name, args) });
     }
@@ -295,7 +303,7 @@ async function research(query: string, statusNote: string, { client, emit, signa
   throw new Error("Research didn't finish within its turn limit.");
 }
 
-async function draft(query: string, notes: string, probes: Probe[], { client, signal }: Context): Promise<GuideDraft> {
+async function draft(query: string, notes: string, probes: Probe[], { client, signal, checkpoint }: Context): Promise<GuideDraft> {
   const response_format = responseFormat("oauth_guide", GuideDraftSchema);
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: DRAFT_SYSTEM },
@@ -306,6 +314,7 @@ async function draft(query: string, notes: string, probes: Probe[], { client, si
   ];
   let lastProblem: unknown;
   for (let attempt = 0; attempt < MAX_DRAFT_ATTEMPTS; attempt++) {
+    await checkpoint();
     let completion: ChatCompletion;
     try {
       completion = await client.chat.completions.create(
@@ -345,7 +354,8 @@ type DraftClaim = GuideDraft["claims"][number];
 type CheckItem = { id: string; text: string; evidence: { id: string; text: string }[] };
 
 /** A second opinion on whether the text really supports each claim. It sees only the claims and page text, and has no tools. */
-async function modelCheck(payload: CheckItem[], { client, signal }: Context) {
+async function modelCheck(payload: CheckItem[], { client, signal, checkpoint }: Context) {
+  await checkpoint();
   const completion = await client.chat.completions.create(
     {
       ...baseRequest,
@@ -452,8 +462,8 @@ async function verify(claims: DraftClaim[], pagesRead: { url: string; text: stri
   return { claims: [...updated.values()], checks };
 }
 
-export async function generateGuide(query: string, options: { client: Groq; emit: Emit; signal: AbortSignal }): Promise<Guide> {
-  const context: Context = options;
+export async function generateGuide(query: string, options: GenerateOptions): Promise<Guide> {
+  const context: Context = { ...options, checkpoint: options.checkpoint ?? (async () => options.signal.throwIfAborted()) };
   const { emit } = context;
   // Concurrent page reads and model calls each listen on this one signal.
   setMaxListeners(100, context.signal);
@@ -476,17 +486,20 @@ export async function generateGuide(query: string, options: { client: Groq; emit
   const alreadyProbed = new Set(probes.map((probe) => probe.url));
   for (const url of probeTargets(pages, query)) {
     if (alreadyProbed.has(url) || probes.length >= MAX_PROBES) continue;
+    await context.checkpoint();
     emit({ stage: "research", message: `Testing ${url}` });
     const probe = await probeUrl(url, `p${probes.length + 1}`, context.signal);
     probes.push(probe);
     emit({ stage: "research", message: `Result: ${probe.observation}` });
   }
 
+  await context.checkpoint();
   emit({ stage: "draft", message: "Writing the guide from the research notes. This usually takes about a minute." });
   const guideDraft = await draft(query, notes, probes, context);
   const resolved = resolvePassages(guideDraft.claims, passages);
   const normalized = demoteModelTested(normalizeClaims({ ...guideDraft, claims: resolved }, probes));
 
+  await context.checkpoint();
   emit({ stage: "verify", message: `Checking ${normalized.filter((claim) => claim.label === "sourced").length} sourced claims against their pages.` });
   const { claims: verified, checks } = await verify(normalized, pages, context);
   const finalClaims = [...applyChecks(verified, checks), ...applyChecks(probeClaims(probes), new Map())];
@@ -501,6 +514,7 @@ export async function generateGuide(query: string, options: { client: Groq; emit
     model: MODEL,
     probes,
   };
+  await context.checkpoint();
   emit({ stage: "publish", message: "Saving the guide." });
   return guide;
 }

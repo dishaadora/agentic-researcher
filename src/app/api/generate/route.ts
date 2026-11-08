@@ -33,5 +33,7 @@ export async function POST(request: Request) {
   const limited = checkLimits(ip);
   if (limited) return NextResponse.json({ error: limited }, { status: 429 });
 
-  return NextResponse.json({ jobId: startJob(query, ip).id });
+  const { job, created } = startJob(query, ip);
+  // Someone joining a run that was already going can watch it, but only whoever started it can stop it.
+  return NextResponse.json({ jobId: job.id, controlToken: created ? job.controlToken : undefined });
 }
