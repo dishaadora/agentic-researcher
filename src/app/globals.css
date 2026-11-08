@@ -124,6 +124,8 @@ button[type="submit"] { background: var(--accent); color: var(--accent-ink); bor
 button[type="submit"]:hover { filter: brightness(1.08); background: var(--accent); }
 button:disabled { opacity: 0.65; cursor: progress; }
 .form-error { background: var(--warn-bg); border-left: 3px solid var(--gated); padding: 10px 12px; margin-top: 12px; border-radius: 4px; }
+.form-error p { margin: 0; }
+.check-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .notice { background: var(--sourced-bg); color: var(--sourced-ink); padding: 10px 12px; border-radius: 4px; }
 .notice a { color: inherit; }
 

@@ -11,7 +11,8 @@ const STATUS_TEXT = { managed: "Composio-managed app available", byo: "Your own 
 
 export default function Home() {
   const guides = listGuides();
-  const names = CATALOG.entries.map((entry) => entry.name);
+  // Names the search bar accepts without a lookup, and checks typos against.
+  const names = [...new Set([...CATALOG.entries.map((entry) => entry.name), ...guides.map((guide) => guide.name)])];
   return (
     <>
       <section className="hero">
